@@ -109,8 +109,7 @@ public class ConfiguracionUsuario extends JDialog {
 
         btnCerrar.addActionListener((ActionEvent o) -> {
 //                Borramos el archivo de datos del usuario.
-            Usuario usr = new Usuario();
-            usr.borrarArchivo();
+
 
             cerrarSesion = true;
             this.setVisible(false);

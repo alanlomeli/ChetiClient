@@ -169,7 +169,7 @@ public class Login extends JFrame {
 
     }
 
-    public void enviarCredenciales() {
+    private void enviarCredenciales() {
 
         Vector<String> vector = new Vector<>(2, 2);
 
@@ -186,7 +186,7 @@ public class Login extends JFrame {
             JOptionPane.showMessageDialog(null, "Sesion iniciada");
             Usuario usuario = new Usuario();
             usuario = usuario.obtenerObjeto();
-            usuario.setCelular(Integer.parseInt(respuestaDatos.getDatos().get(0)));
+            usuario.setCelular(Long.parseLong(respuestaDatos.getDatos().get(0)));
             usuario.setNombre(respuestaDatos.getDatos().get(1));
             usuario.setApellido(respuestaDatos.getDatos().get(2));
             usuario.setNotpasswd(String.valueOf(etxtPass.getPassword()));

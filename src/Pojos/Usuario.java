@@ -20,14 +20,14 @@ import java.nio.file.Files;
  */
 public class Usuario {
 
-    int celular;
+    long celular;
     String nombre;
     String apellido;
     String notpasswd;
     String ipServer;
     boolean darkMode;
 
-    public Usuario(int celular, String nombre, String apellido, String notpasswd, String ipServer, boolean darkMode) {
+    public Usuario(long celular, String nombre, String apellido, String notpasswd, String ipServer, boolean darkMode) {
         this.celular = celular;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -54,11 +54,11 @@ public class Usuario {
         this.darkMode = false;
     }
 
-    public int getCelular() {
+    public long getCelular() {
         return celular;
     }
 
-    public void setCelular(int celular) {
+    public void setCelular(long celular) {
         this.celular = celular;
     }
 

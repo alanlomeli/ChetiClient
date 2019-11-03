@@ -107,7 +107,7 @@ public class Registro extends JFrame {
     }
 
     private void btnRegistrar() {
-        Vector<String> vector = new Vector(5, 5);
+        Vector<String> vector = new Vector<>(5, 5);
 //Celular, Nombre, Apellido, Passwd, Respuesta
         vector.add(NumTel.getText());
         vector.add(Nombre.getText());
@@ -119,21 +119,21 @@ public class Registro extends JFrame {
 
         Respuesta respuestaDatos = enviarDato.enviar();
 
-        if (respuestaDatos.success()) {        //Si la contra fue correcta guardamos los datos
+        if (respuestaDatos.success()) {        //Si el registro fue correcta guardamos los datos
             VistaChat abrirchat = new VistaChat(); //Abre el chat
             abrirchat.setVisible(true);
             this.setVisible(false); //Hace el login invisible
             JOptionPane.showMessageDialog(null, "Se Registró correctamente");
             Usuario usuario = new Usuario();
             usuario = usuario.obtenerObjeto();
-            /*
-            usuario.setCelular(Integer.parseInt(respuestaDatos.getDatos().get(0)));
+
+            usuario.setCelular(Long.parseLong(respuestaDatos.getDatos().get(0)));
             usuario.setNombre(respuestaDatos.getDatos().get(1));
             usuario.setApellido(respuestaDatos.getDatos().get(2));
             usuario.setNotpasswd(String.valueOf(Contrasena.getPassword()));
             usuario.escribirArchivo(usuario); //Escribimos el archivo
-             */
-            
+
+
         } else {
 
             JOptionPane.showMessageDialog(null, "Se Registró Incorrectamente");

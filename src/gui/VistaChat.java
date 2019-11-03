@@ -7,25 +7,17 @@ package gui;
 
 import Clases.Comunicacion;
 import Clases.EnviarSocket;
+import Clases.ListaUsuarios;
 import Clases.Respuesta;
 import Pojos.Usuario;
 import com.google.gson.Gson;
 
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.Socket;
 import java.util.Vector;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class VistaChat extends JFrame {
 
@@ -37,10 +29,12 @@ public class VistaChat extends JFrame {
     private JButton btnConfiguracion;
     private JLabel amigosConectados;
     private JList listaAmigosConectados;
-    private int numeroChatActivo; //Tiene el celular de la persona con la que se esta enviando un mensaje
+    private long numeroChatActivo; //Tiene el celular de la persona con la que se esta enviando un mensaje
 
     private JTextField etxtMsg;
     private JButton btnSendMsg;
+
+    private ListaUsuarios listaUsuarios;  //Esta lista tiene todos los usuarios, amigos y no amigos, tambien tiene si estan online
 
     public VistaChat() {
         iniciarComponentes(); //En este void inicia la magia o.0
@@ -73,9 +67,9 @@ public class VistaChat extends JFrame {
                         .addComponent(panelMessage, 800, 800, 800))
                 .addGroup(orden.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(orden.createSequentialGroup()
-                                .addComponent(compitas,100,100,100)
-                                .addComponent(usuarios,100,100,100)
-                                .addComponent(grupos,100,100,100))
+                                .addComponent(compitas, 100, 100, 100)
+                                .addComponent(usuarios, 100, 100, 100)
+                                .addComponent(grupos, 100, 100, 100))
                         .addComponent(panelSuperiorDer, 314, 314, 314)
                         .addComponent(panelInferiorDer, 314, 314, 314))
         );
@@ -97,10 +91,13 @@ public class VistaChat extends JFrame {
         setLayout(orden);
         this.pack();
 
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                decirOffline();
+            }
+        });
 
     }
-
-
 
 
     /**
@@ -127,12 +124,14 @@ public class VistaChat extends JFrame {
                     //Iniciar sesion automaticamente
                     iniciarSesion();
 
+
                 } else {
                     loginVista.setVisible(true);
 
                 }
             }
         });
+
     }
 
     /**
@@ -148,7 +147,6 @@ public class VistaChat extends JFrame {
         if (!existe) {   //Si no existia archivo lo crea
             usuario.escribirArchivo(usuario);
         }
-
         return existe;
 
     }
@@ -157,10 +155,7 @@ public class VistaChat extends JFrame {
      * Inicia sesion usando las credenciales locales
      */
     private void iniciarSesion() {
-
         Usuario usuarioGuardado = new Usuario();
-        Gson gson = new Gson();
-        Socket socketCredenciales;
         usuarioGuardado = usuarioGuardado.obtenerObjeto();
         Vector<String> vector = new Vector<>(2, 2);
 
@@ -177,10 +172,11 @@ public class VistaChat extends JFrame {
             //JOptionPane.showMessageDialog(null, "Sesion iniciada");
             Usuario usuario = new Usuario();
             usuario = usuario.obtenerObjeto();
-            usuario.setCelular(Integer.parseInt(respuestaDatos.getDatos().get(0)));
+            usuario.setCelular(Long.parseLong(respuestaDatos.getDatos().get(0)));
             usuario.setNombre(respuestaDatos.getDatos().get(1));
             usuario.setApellido(respuestaDatos.getDatos().get(2));
             usuario.escribirArchivo(usuario); //Escribimos el archivo
+            obtenerListaUsuarios();
 
         } else {
 
@@ -190,6 +186,38 @@ public class VistaChat extends JFrame {
 
     }
 
+    /**
+     * Esta funciona obtiene toda la lista de usuarios del server,
+     * esta tendrá si el usuario es tu amigo, o no, también dira si esta conectado actualmente.
+     */
+    private void obtenerListaUsuarios() {
+        Gson gson = new Gson();
+        Usuario usuario = new Usuario();
+        usuario = usuario.obtenerObjeto();
+        Vector<String> datos = new Vector<>();
+        datos.add(usuario.getCelular() + "");
+        EnviarSocket obtenerlista = new EnviarSocket("verUsuarios", datos);
+        Respuesta respuesta = obtenerlista.enviar();
+
+        if (respuesta.success()) {
+            System.out.println(respuesta.getDatos().get(0));
+            listaUsuarios = gson.fromJson(respuesta.getDatos().get(0), ListaUsuarios.class);
+            System.out.println(gson.toJson(listaUsuarios));
+        }
+    }
+
+    /**
+     * Esta funcion le dice al server que el cliente irá offline
+     */
+    private void decirOffline() {
+        Usuario usuarioGuardado = new Usuario();
+        usuarioGuardado = usuarioGuardado.obtenerObjeto();
+        Vector<String> datos = new Vector<>();
+        datos.add(usuarioGuardado.getCelular() + "");
+
+        EnviarSocket irOffline = new EnviarSocket("offline", datos);
+        irOffline.enviar();
+    }
 
     private void enviarMensaje() {
 
@@ -212,18 +240,17 @@ public class VistaChat extends JFrame {
         Comunicacion enviarMsgGrpo = new Comunicacion("MsgGrupo", vectorSendMsg);
 
         try {
-
             System.out.println();
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
-    private void iniciarPanelMensajes(){
+    private void iniciarPanelMensajes() {
 
         etxtMsg = new JTextField("Escriba el mensaje:");
         btnSendMsg = new JButton("Enviar");
-        btnConfiguracion = new JButton("Confi");
+        btnConfiguracion = new JButton("Config");
 
         btnSendMsg.addActionListener((ActionEvent e) -> {
             enviarMensaje();
@@ -244,16 +271,16 @@ public class VistaChat extends JFrame {
                 Msg.createSequentialGroup()
                         .addGroup(
                                 Msg.createParallelGroup()
-                                        .addComponent(etxtMsg,50,50,50)
-                                        .addComponent(btnSendMsg,50,50,50)
-                                        .addComponent(btnConfiguracion,50,50,50)
+                                        .addComponent(etxtMsg, 50, 50, 50)
+                                        .addComponent(btnSendMsg, 50, 50, 50)
+                                        .addComponent(btnConfiguracion, 50, 50, 50)
 
                         )
         );
 
-       panelMessage.setLayout(Msg);
+        panelMessage.setLayout(Msg);
 
-       //Listener panel mensajes
+        //Listener panel mensajes
         btnConfiguracion.addActionListener((ActionEvent e) -> {
             //Aqui se cierra la ventana de Chat al cerrar sesion
             configUsr = new ConfiguracionUsuario();
@@ -262,7 +289,9 @@ public class VistaChat extends JFrame {
 
             //Boton de cerrar sesion fue presionado.
             if (configUsr.cerrarSesion) {
-
+                decirOffline();
+                Usuario usr = new Usuario();
+                usr.borrarArchivo();
                 this.setVisible(false);
                 CambiarIP cambiarIP = new CambiarIP();
                 cambiarIP.setModal(true);
@@ -288,7 +317,8 @@ public class VistaChat extends JFrame {
 
         });
     }
-    private void iniciarPanelSuperiorDer(){
+
+    private void iniciarPanelSuperiorDer() {
         compitas = new JButton();
         usuarios = new JButton();
         grupos = new JButton();
@@ -306,7 +336,10 @@ public class VistaChat extends JFrame {
             Vector<String> vector = new Vector<>(2, 2);
             vector.add(new Usuario().obtenerObjeto().getCelular() + "");
 
-            EnviarSocket enviarDato = new EnviarSocket("compitasConectados", vector);
+            EnviarSocket enviarDato = new EnviarSocket("compitasConectados", vector); /*Esta ya no es la forma de
+                                                                                           obtener a los amigos conectados,
+                                                                                           ya estan en el objeto "listaUsuarios
+                                                                                                    */
             Respuesta respuestaDatos = enviarDato.enviar();
 
             if (respuestaDatos.success()) {
@@ -346,12 +379,19 @@ public class VistaChat extends JFrame {
     }
 
     /**
-     *
      * @param datos los datos del compita seleccionado
      */
     private void compitaSeleccionado(String datos) {
+
         String[] parts = datos.split(",");
 
-        this.numeroChatActivo = Integer.parseInt(parts[2]);
+        this.numeroChatActivo = Long.parseLong(parts[2]);
+
+        JLabel nombreChat = new JLabel("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
+        System.out.println("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
+        nombreChat.setAlignmentX(CENTER_ALIGNMENT);
+        panelChat.setLayout(new BoxLayout(panelChat, BoxLayout.Y_AXIS));
+        panelChat.add(nombreChat);
+        panelChat.validate();
     }
 }
