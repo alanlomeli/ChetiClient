@@ -125,7 +125,6 @@ public class Usuario {
             FileOutputStream archivoConfig = new FileOutputStream("UserConfig/configuracion");
             DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(archivoConfig));
             outStream.writeUTF(k);
-            System.out.println(k);
             outStream.close();
 
         } catch (Exception ex) {

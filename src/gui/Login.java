@@ -171,13 +171,12 @@ public class Login extends JFrame {
 
     public void enviarCredenciales() {
 
-        Vector<String> vector = new Vector(2, 2);
+        Vector<String> vector = new Vector<>(2, 2);
 
         vector.addElement(etxtNum.getText());
         vector.addElement(String.valueOf(etxtPass.getPassword()));
 
         EnviarSocket enviarDato = new EnviarSocket("login", vector);
-        System.out.println("eee");
         Respuesta respuestaDatos = enviarDato.enviar();
 
         if (respuestaDatos.success()) {        //Si la contra fue correcta guardamos los datos

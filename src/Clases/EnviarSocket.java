@@ -49,15 +49,10 @@ public class EnviarSocket {
     public Respuesta enviar() {
 
         try {
-            System.out.println("ip:");
-            System.out.println(new Usuario().obtenerObjeto().getIpServer());
-            System.out.println(new Usuario().obtenerObjeto().getIpServer() + "ip");
 
-            System.out.println("enviado");
             socketCredenciales = new Socket(new Usuario().obtenerObjeto().getIpServer(), 1234);//Obtiene la ip del archivo local
             bw = new BufferedWriter(new OutputStreamWriter(socketCredenciales.getOutputStream()));
             br = new BufferedReader(new InputStreamReader(socketCredenciales.getInputStream()));
-            System.out.println(gson.toJson(enviar));
             bw.write(gson.toJson(enviar) + "\n");
 
             bw.flush();
