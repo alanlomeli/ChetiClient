@@ -13,6 +13,7 @@ public class Usuarios {
 
 
     public Usuarios() {
+        this.apodo="";
     }
 
     public Usuarios(long celular, String nombre, String apellido, boolean online) {
@@ -20,9 +21,11 @@ public class Usuarios {
         this.nombre = nombre;
         this.apellido = apellido;
         this.online = online;
+        this.apodo="";
         this.ip="";
     }
     public Usuarios(long celular, String nombre, String apellido, boolean online, String ip) {
+        this.apodo="";
         this.celular = celular;
         this.nombre = nombre;
         this.apellido = apellido;

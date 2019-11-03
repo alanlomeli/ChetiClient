@@ -4,6 +4,7 @@ import Clases.Comunicacion;
 import Clases.EnviarSocket;
 import Clases.Respuesta;
 import Pojos.Usuario;
+
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,26 +12,21 @@ import java.awt.event.ActionListener;
 import java.awt.font.TextAttribute;
 import java.net.Socket;
 import java.util.Map;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 //import javax.swing.JPanel;
-import javax.swing.JTextField;
+
 import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Vector;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
 
 /**
- *
  * @author juanp
  */
-public class Login extends JFrame {
+public class Login extends JDialog {
 
     private Socket socketCredenciales;
     private JButton btnRegistrar, btnIngresar;
@@ -38,10 +34,13 @@ public class Login extends JFrame {
     private JTextField etxtNum;
     private JPasswordField etxtPass;
     private int contadorErrores;
-
+    private VistaChat vistachat;
+    private Registro vistaRegistro;
     //private JTextView txtIniciar;
-    public Login() {
 
+    public Login(VistaChat vistaChat) {
+        this.vistachat = vistaChat;
+        this.vistaRegistro = new Registro(vistaChat);
         start();
     }
 
@@ -55,10 +54,10 @@ public class Login extends JFrame {
             enviarCredenciales();
 
         });
-        
+
         btnRegistrar.addActionListener((ActionEvent e) -> {
-            Registro reg = new Registro();
-            
+            Registro reg = new Registro(vistachat);
+
             reg.setVisible(true);
             this.setVisible(false);
 
@@ -180,8 +179,8 @@ public class Login extends JFrame {
         Respuesta respuestaDatos = enviarDato.enviar();
 
         if (respuestaDatos.success()) {        //Si la contra fue correcta guardamos los datos
-            VistaChat abrirchat = new VistaChat(); //Abre el chat
-            abrirchat.setVisible(true);
+
+
             this.setVisible(false); //Hace el login invisible
             JOptionPane.showMessageDialog(null, "Sesion iniciada");
             Usuario usuario = new Usuario();
@@ -191,13 +190,15 @@ public class Login extends JFrame {
             usuario.setApellido(respuestaDatos.getDatos().get(2));
             usuario.setNotpasswd(String.valueOf(etxtPass.getPassword()));
             usuario.escribirArchivo(usuario); //Escribimos el archivo
+            vistachat.obtenerListaUsuarios();
+            vistachat.setVisible(true);
 
         } else {
 
             contadorErrores++;
             if (contadorErrores == 3) {
-                Registro registrarse = new Registro();
-                registrarse.setVisible(true);
+
+                vistaRegistro.setVisible(true);
                 this.setVisible(false); //Hace el login invisible
             }
             JOptionPane.showMessageDialog(null, "Contraseña incorrecta");

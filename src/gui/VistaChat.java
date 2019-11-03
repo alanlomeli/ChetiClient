@@ -21,18 +21,19 @@ import javax.swing.*;
 
 public class VistaChat extends JFrame {
 
-    private Login loginVista = new Login();
+    private Login loginVista;
     private ConfiguracionUsuario configUsr;
-
-    private JPanel panelChat, panelMessage, panelSuperiorDer, panelInferiorDer; //División de paneles principales
-    private JButton compitas, usuarios, grupos;
+    private JPanel panelChat, panelMessage, panelConectados, panelDesconectados; //División de paneles principales
+    private JToggleButton compitas, usuarios, grupos;
     private JButton btnConfiguracion;
-    private JLabel amigosConectados;
-    private JList listaAmigosConectados;
     private long numeroChatActivo; //Tiene el celular de la persona con la que se esta enviando un mensaje
-
+    private ButtonGroup buttonGroup;
+    private JLabel indicadorPanelConectados;
+    private JLabel indicadorPanelDesconectados;
+    private JLabel labelNombreChat; //Indica en el panel de chats con quien estas chateando
     private JTextField etxtMsg;
     private JButton btnSendMsg;
+    private JPanel panelMensajes; //Contiene los mensajes
 
     private ListaUsuarios listaUsuarios;  //Esta lista tiene todos los usuarios, amigos y no amigos, tambien tiene si estan online
 
@@ -46,14 +47,38 @@ public class VistaChat extends JFrame {
     private void iniciarComponentes() {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("CHETI CHAT");
+        loginVista = new Login(this);
         panelChat = new JPanel();
         panelChat.setBackground(Color.cyan);
+        panelMensajes = new JPanel();
+        labelNombreChat = new JLabel();
+        panelChat.add(labelNombreChat);
+        panelChat.add(panelMensajes);
+        panelMensajes.setLayout(new BoxLayout(panelMensajes, BoxLayout.Y_AXIS));
         panelMessage = new JPanel();
         panelMessage.setBackground(Color.green);
-        panelSuperiorDer = new JPanel();
-        panelSuperiorDer.setBackground(Color.yellow);
-        panelInferiorDer = new JPanel();
-        panelInferiorDer.setBackground(Color.pink);
+        panelConectados = new JPanel();
+        panelConectados.setBackground(Color.yellow);
+        panelDesconectados = new JPanel();
+        panelDesconectados.setBackground(Color.pink);
+
+        indicadorPanelConectados = new JLabel("Compitas conectados");
+        indicadorPanelDesconectados = new JLabel("Compitas desconectados");
+
+        compitas = new JToggleButton();
+        usuarios = new JToggleButton();
+        grupos = new JToggleButton();
+        buttonGroup = new ButtonGroup();
+
+        compitas.setText("Compitas");
+        usuarios.setText("Usuarios");
+        grupos.setText("Grupos");
+
+
+        buttonGroup.add(compitas);
+        buttonGroup.add(usuarios);
+        buttonGroup.add(grupos); //Al añadir los botones a un grupo, cuando se seleccione uno, el otro se deseleccionará.
+        compitas.setSelected(true); //Por defecto compitas se selecciona
 
         iniciarPanelMensajes();
         iniciarPanelSuperiorDer();
@@ -70,8 +95,11 @@ public class VistaChat extends JFrame {
                                 .addComponent(compitas, 100, 100, 100)
                                 .addComponent(usuarios, 100, 100, 100)
                                 .addComponent(grupos, 100, 100, 100))
-                        .addComponent(panelSuperiorDer, 314, 314, 314)
-                        .addComponent(panelInferiorDer, 314, 314, 314))
+                        .addComponent(indicadorPanelConectados, 314, 314, 314)
+                        .addComponent(panelConectados, 314, 314, 314)
+                        .addComponent(indicadorPanelDesconectados, 314, 314, 314)
+
+                        .addComponent(panelDesconectados, 314, 314, 314))
         );
 
         orden.setVerticalGroup(orden.createParallelGroup()
@@ -84,8 +112,10 @@ public class VistaChat extends JFrame {
                                 .addComponent(compitas)
                                 .addComponent(usuarios)
                                 .addComponent(grupos))
-                        .addComponent(panelSuperiorDer, 400, 400, 400)
-                        .addComponent(panelInferiorDer, 320, 320, 320)
+                        .addComponent(indicadorPanelConectados)
+                        .addComponent(panelConectados, 400, 400, 400)
+                        .addComponent(indicadorPanelDesconectados)
+                        .addComponent(panelDesconectados, 320, 320, 320)
                 )
         );
         setLayout(orden);
@@ -120,14 +150,17 @@ public class VistaChat extends JFrame {
         cambiarIP.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                if (existe) {
+                Usuario configGuardada = new Usuario();
+
+                configGuardada = configGuardada.obtenerObjeto();
+                if (existe && configGuardada.obtenerObjeto().getCelular() != 0) {
                     //Iniciar sesion automaticamente
                     iniciarSesion();
 
 
                 } else {
-                    loginVista.setVisible(true);
 
+                    loginVista.setVisible(true);
                 }
             }
         });
@@ -179,9 +212,7 @@ public class VistaChat extends JFrame {
             obtenerListaUsuarios();
 
         } else {
-
-            JOptionPane.showMessageDialog(null, "Parece que tu ultima contraseña cambio.");
-
+            JOptionPane.showMessageDialog(null, "Error iniciando sesion automaticamente.");
         }
 
     }
@@ -190,7 +221,7 @@ public class VistaChat extends JFrame {
      * Esta funciona obtiene toda la lista de usuarios del server,
      * esta tendrá si el usuario es tu amigo, o no, también dira si esta conectado actualmente.
      */
-    private void obtenerListaUsuarios() {
+    public void obtenerListaUsuarios() {
         Gson gson = new Gson();
         Usuario usuario = new Usuario();
         usuario = usuario.obtenerObjeto();
@@ -200,9 +231,10 @@ public class VistaChat extends JFrame {
         Respuesta respuesta = obtenerlista.enviar();
 
         if (respuesta.success()) {
-            System.out.println(respuesta.getDatos().get(0));
             listaUsuarios = gson.fromJson(respuesta.getDatos().get(0), ListaUsuarios.class);
-            System.out.println(gson.toJson(listaUsuarios));
+            listaUsuarios.getPersonas().remove(usuario.getCelular());        //ELiminarse a sí mismo de la lista xddd
+
+            acomodarPanelesUsuarios();
         }
     }
 
@@ -304,14 +336,14 @@ public class VistaChat extends JFrame {
             if (configUsr.darkMode) {
                 panelChat.setBackground(Color.GRAY);
                 panelMessage.setBackground(Color.GRAY);
-                panelSuperiorDer.setBackground(Color.GRAY);
-                panelInferiorDer.setBackground(Color.GRAY);
+                panelConectados.setBackground(Color.GRAY);
+                panelDesconectados.setBackground(Color.GRAY);
 
             } else {
                 panelChat.setBackground(Color.cyan);
                 panelMessage.setBackground(Color.green);
-                panelSuperiorDer.setBackground(Color.yellow);
-                panelInferiorDer.setBackground(Color.pink);
+                panelConectados.setBackground(Color.yellow);
+                panelDesconectados.setBackground(Color.pink);
             }
 
 
@@ -319,79 +351,122 @@ public class VistaChat extends JFrame {
     }
 
     private void iniciarPanelSuperiorDer() {
-        compitas = new JButton();
-        usuarios = new JButton();
-        grupos = new JButton();
-        compitas.setText("Compitas");
-        usuarios.setText("Usuarios");
-        grupos.setText("Grupos");
 
         //Listener panel superior derecho
         //Este boton busca a los amigos que tienes para mostrarlos en la vista superior derecha.
         compitas.addActionListener((ActionEvent e) -> {
+            indicadorPanelConectados.setText("Compitas conectados");
+            indicadorPanelDesconectados.setText("Compitas desconectados");
+            acomodarPanelesUsuarios();
 
-            //Verificar los usuarios amigos de la BD
-            panelSuperiorDer.removeAll();
-
-            Vector<String> vector = new Vector<>(2, 2);
-            vector.add(new Usuario().obtenerObjeto().getCelular() + "");
-
-            EnviarSocket enviarDato = new EnviarSocket("compitasConectados", vector); /*Esta ya no es la forma de
-                                                                                           obtener a los amigos conectados,
-                                                                                           ya estan en el objeto "listaUsuarios
-                                                                                                    */
-            Respuesta respuestaDatos = enviarDato.enviar();
-
-            if (respuestaDatos.success()) {
-                JButton[] boton = new JButton[respuestaDatos.getDatos().size()];
-
-                for (int i = 0; i < boton.length; i++) {
-
-                    String[] parts = respuestaDatos.getDatos().elementAt(i).split(",");
-                    if (!parts[1].equals("")) {
-                        boton[i] = new JButton(parts[1]);
-                    } else {
-                        boton[i] = new JButton(parts[0]);
-                    }
-                    boton[i].setActionCommand(respuestaDatos.getDatos().elementAt(i));
-
-                    boton[i].addActionListener((ActionEvent eventoBoton) -> {
-                        compitaSeleccionado(eventoBoton.getActionCommand());
-                    });
-
-                    panelSuperiorDer.add(boton[i]);
-                }
-                panelSuperiorDer.validate();
-                panelSuperiorDer.repaint();
-            }
         });
 
 
         usuarios.addActionListener((ActionEvent e) -> {
             //  System.out.println("Usuraios");
+            indicadorPanelConectados.setText("Usuarios conectados");
+            indicadorPanelDesconectados.setText("Usuarios desconectados");
+            acomodarPanelesUsuarios();
+
+
         });
 
         grupos.addActionListener((ActionEvent e) -> {
             // System.out.println("Grupos");
+            indicadorPanelConectados.setText("Grupos disponibles");
+            indicadorPanelDesconectados.setText("Crear un grupo");
+            acomodarPanelesUsuarios();
 
 
         });
     }
 
     /**
-     * @param datos los datos del compita seleccionado
+     * @param datos los datos de la persona seleccionada
      */
-    private void compitaSeleccionado(String datos) {
+    private void personaSeleccionada(String datos) {
 
         String[] parts = datos.split(",");
 
         this.numeroChatActivo = Long.parseLong(parts[2]);
 
-        JLabel nombreChat = new JLabel("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
+        labelNombreChat.setText("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
+        labelNombreChat.setAlignmentX(CENTER_ALIGNMENT);
         System.out.println("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
-        nombreChat.setAlignmentX(CENTER_ALIGNMENT);
-        panelChat.setLayout(new BoxLayout(panelChat, BoxLayout.Y_AXIS));
-        panelChat.add(nombreChat);
         panelChat.validate();
     }
+
+    /**
+     * En esta funcion, todos los paneles obtendran los respectivos usuarios correspondientes, ya sea compita, usuario
+     * conectado y no conectado.
+     */
+    private void acomodarPanelesUsuarios() {
+
+        panelConectados.removeAll();
+        panelDesconectados.removeAll();
+        JButton[] botonCompitas = new JButton[listaUsuarios.getCompitas().size()];
+        JButton[] botonOnline = new JButton[listaUsuarios.obtenerListaCompleta().size()];
+
+
+        if (compitas.isSelected()) {         //Aqui se acomodan los compitas
+
+            int i = 0;
+            for (long key : listaUsuarios.getCompitas().keySet()) {
+                if (!listaUsuarios.getCompitas().get(key).getApodo().equals("")) {
+
+                    botonCompitas[i] = new JButton(listaUsuarios.getCompitas().get(key).getApodo());
+                } else {
+                    botonCompitas[i] = new JButton(listaUsuarios.getCompitas().get(key).getCelular() + "");
+                }
+                botonCompitas[i].setActionCommand(listaUsuarios.getCompitas().get(key).getNombre() + "," +
+                        listaUsuarios.getCompitas().get(key).getApodo() + "," +
+                        listaUsuarios.getCompitas().get(key).getCelular()
+                );
+
+                botonCompitas[i].addActionListener((ActionEvent eventoBoton) -> {
+                    personaSeleccionada(eventoBoton.getActionCommand());
+                });
+                if (listaUsuarios.getCompitas().get(key).isOnline()) {  //Conectados al panel online
+                    panelConectados.add(botonCompitas[i]);
+                } else {                                                    //Desconectados al panel offline
+                    panelDesconectados.add(botonCompitas[i]);
+
+                }
+
+            }
+        } else if (usuarios.isSelected()) {
+
+            int i = 0;
+            for (long key : listaUsuarios.obtenerListaCompleta().keySet()) {
+                if (!listaUsuarios.obtenerListaCompleta().get(key).getApodo().equals("")) {
+
+                    botonOnline[i] = new JButton(listaUsuarios.obtenerListaCompleta().get(key).getApodo());
+                } else {
+                    botonOnline[i] = new JButton(listaUsuarios.obtenerListaCompleta().get(key).getNombre());
+                }
+                botonOnline[i].setActionCommand(listaUsuarios.obtenerListaCompleta().get(key).getNombre() + "," +
+                        listaUsuarios.obtenerListaCompleta().get(key).getApodo() + "," +
+                        listaUsuarios.obtenerListaCompleta().get(key).getCelular()
+                );
+
+                botonOnline[i].addActionListener((ActionEvent eventoBoton) -> {
+                    personaSeleccionada(eventoBoton.getActionCommand());
+                });
+                if (listaUsuarios.obtenerListaCompleta().get(key).isOnline()) {  //Conectados al panel online
+                    panelConectados.add(botonOnline[i]);
+                } else {                                                    //Desconectados al panel offline
+                    panelDesconectados.add(botonOnline[i]);
+
+                }
+                i++;
+            }
+        }
+        panelConectados.validate();
+        panelDesconectados.validate();
+        panelConectados.repaint();
+        panelDesconectados.repaint();
+
+
+    }
+
 }

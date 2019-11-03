@@ -5,18 +5,15 @@
  */
 package gui;
 
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.*;
+
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 /**
  *
  * @author relg1
  */
-public class OlvidoContra extends JFrame {
+public class OlvidoContra extends JDialog {
     
     private JButton botonVerificar, botonRegresar;
     private JLabel titulo, numeroTitulo, preguntaTitulo;

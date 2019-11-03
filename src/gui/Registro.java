@@ -8,31 +8,25 @@ package gui;
 import Clases.EnviarSocket;
 import Clases.Respuesta;
 import Pojos.Usuario;
+
 import java.awt.event.ActionEvent;
 import java.util.Vector;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 
 /**
- *
  * @author alan
  */
-public class Registro extends JFrame {
+public class Registro extends JDialog {
 
     private JLabel LRegistrate, LApellido, LNombre, LNumTel, LContrasena, LPregSeg, LLugNac;
     JTextField LugNac, NumTel, Nombre, Apellido;
     JPasswordField Contrasena;
     private JPanel Registro;
     JButton BRegistrar, BCancelar;
+    private VistaChat vistaChat;
 
-    public Registro() {
+    public Registro(VistaChat vistaChat) {
+        this.vistaChat = vistaChat;
         this.setResizable(false);
         iniciarComponentes();
     }
@@ -58,6 +52,7 @@ public class Registro extends JFrame {
         BRegistrar.addActionListener((ActionEvent e) -> {
             btnRegistrar();
         });
+
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setAutoCreateGaps(true);
@@ -102,7 +97,7 @@ public class Registro extends JFrame {
         );
 
         this.pack();
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         //this.setSize(1280,720);
     }
 
@@ -120,8 +115,8 @@ public class Registro extends JFrame {
         Respuesta respuestaDatos = enviarDato.enviar();
 
         if (respuestaDatos.success()) {        //Si el registro fue correcta guardamos los datos
-            VistaChat abrirchat = new VistaChat(); //Abre el chat
-            abrirchat.setVisible(true);
+
+            vistaChat.setVisible(true);
             this.setVisible(false); //Hace el login invisible
             JOptionPane.showMessageDialog(null, "Se Registró correctamente");
             Usuario usuario = new Usuario();
