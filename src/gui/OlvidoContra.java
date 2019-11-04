@@ -7,6 +7,8 @@ package gui;
 
 import javax.swing.*;
 
+import java.awt.event.ActionEvent;
+
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
 /**
@@ -34,6 +36,10 @@ public class OlvidoContra extends JDialog {
         preguntaTitulo = new JLabel("¿Cuál es el nombre del lugar donde naciste?");
         numeroTexto = new JTextField("Número de teléfono");
         preguntaTexto = new JTextField("Escribe el lugar");
+
+        botonVerificar.addActionListener((ActionEvent e) -> {
+
+        });
 
         GroupLayout orden = new GroupLayout(this.getContentPane());
 
