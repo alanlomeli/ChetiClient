@@ -41,7 +41,7 @@ public class VistaChat extends JFrame {
         iniciarComponentes(); //En este void inicia la magia o.0
         this.setSize(new Dimension(1138, 720));
         setLocationRelativeTo(null); //Al correr, la ventana se centra en medio de la pantalla
-        this.setResizable(false); //Pa que nuestra ventana no se vaya a cambiar de tamaño
+       // this.setResizable(false); //Pa que nuestra ventana no se vaya a cambiar de tamaño
     }
 
     private void iniciarComponentes() {
@@ -357,8 +357,7 @@ public class VistaChat extends JFrame {
         compitas.addActionListener((ActionEvent e) -> {
             indicadorPanelConectados.setText("Compitas conectados");
             indicadorPanelDesconectados.setText("Compitas desconectados");
-            acomodarPanelesUsuarios();
-
+            obtenerListaUsuarios();
         });
 
 
@@ -366,7 +365,7 @@ public class VistaChat extends JFrame {
             //  System.out.println("Usuraios");
             indicadorPanelConectados.setText("Usuarios conectados");
             indicadorPanelDesconectados.setText("Usuarios desconectados");
-            acomodarPanelesUsuarios();
+            obtenerListaUsuarios();
 
 
         });
@@ -375,7 +374,7 @@ public class VistaChat extends JFrame {
             // System.out.println("Grupos");
             indicadorPanelConectados.setText("Grupos disponibles");
             indicadorPanelDesconectados.setText("Crear un grupo");
-            acomodarPanelesUsuarios();
+            obtenerListaUsuarios();
 
 
         });
@@ -404,6 +403,8 @@ public class VistaChat extends JFrame {
 
         panelConectados.removeAll();
         panelDesconectados.removeAll();
+
+        panelDesconectados.setLayout(new FlowLayout());
         JButton[] botonCompitas = new JButton[listaUsuarios.getCompitas().size()];
         JButton[] botonOnline = new JButton[listaUsuarios.obtenerListaCompleta().size()];
 
@@ -460,6 +461,78 @@ public class VistaChat extends JFrame {
                 }
                 i++;
             }
+        } else if (grupos.isSelected()) {
+            JLabel nombreDelGrupo = new JLabel("Nombre del grupo.");
+            JLabel miembrosAlGrupo = new JLabel("Agregue miembros (celular)");
+            JTextField agregarNombre = new JTextField();
+            JTextField agregarMiembros = new JTextField();
+            JButton btnagregarMiembro = new JButton("✓");
+
+
+            Vector<String> datos = new Vector<>();
+
+            btnagregarMiembro.addActionListener((ActionEvent e) -> {
+            if(agregarMiembros.getText().equals("")){
+                JOptionPane.showMessageDialog(null, "Escribe un numero primero");
+            }else{
+                if(listaUsuarios.obtenerListaCompleta().get(Long.parseLong(agregarMiembros.getText()))!=null){
+                    datos.add(agregarMiembros.getText());
+                    agregarMiembros.setText("");
+
+                }else{
+                    JOptionPane.showMessageDialog(null, "Usuario no encontrado");
+                }
+
+            }
+
+            });
+
+
+            JButton btnCrearGrupo = new JButton("Crear grupo");
+
+            btnCrearGrupo.addActionListener((ActionEvent e) -> {
+                Usuario personaActual= new Usuario();
+                personaActual= personaActual.obtenerObjeto();
+              if(datos.size()==1||agregarNombre.getText().equals("")){
+                  JOptionPane.showMessageDialog(null, "Asegurese de agregar miembros y " +
+                          "nombre del grupo");
+              }else{
+                  datos.insertElementAt(personaActual.getCelular()+","+agregarNombre.getText(),0);
+                  EnviarSocket crearGrupo = new EnviarSocket("crearGrupo",datos);
+                  Respuesta respuesta=crearGrupo.enviar();
+                    datos.removeAllElements();
+                  agregarNombre.setText("");
+                  if(respuesta.success()){
+                      JOptionPane.showMessageDialog(null, "Grupo creado correctamente");
+                        acomodarPanelesUsuarios();
+                  }
+              }
+
+            });
+
+            GroupLayout crearGrupo = new GroupLayout(panelDesconectados);
+
+            crearGrupo.setHorizontalGroup(
+                    crearGrupo.createParallelGroup()
+                            .addComponent(nombreDelGrupo).addComponent(agregarNombre).addComponent(miembrosAlGrupo)
+                            .addGroup(
+                                    crearGrupo.createSequentialGroup().addComponent((agregarMiembros)
+                                    ).addComponent(btnagregarMiembro)
+                            ).addComponent(btnCrearGrupo)
+            );
+
+            crearGrupo.setVerticalGroup(
+                    crearGrupo.createSequentialGroup()
+                            .addComponent(nombreDelGrupo).addComponent(agregarNombre,27,27,27).addComponent(miembrosAlGrupo)
+                            .addGroup(
+                                    crearGrupo.createParallelGroup().addComponent((agregarMiembros), 27, 27, 27
+                                    ).addComponent(btnagregarMiembro)
+                            ).addComponent(btnCrearGrupo)
+            );
+
+            panelDesconectados.setLayout(crearGrupo);
+
+
         }
         panelConectados.validate();
         panelDesconectados.validate();
