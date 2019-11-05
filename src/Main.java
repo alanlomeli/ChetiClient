@@ -9,5 +9,6 @@ public class Main {
 
         Thread hilo;
         hilo = new BuscarMensajes(vc);
+        hilo.start();
     }
 }

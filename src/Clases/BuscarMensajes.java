@@ -10,23 +10,29 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class BuscarMensajes extends Thread{
+public class BuscarMensajes extends Thread {
 
     private VistaChat vistaDelChat;
     private ServerSocket serverSocket;
     private Respuesta answerObject;
 
-    public BuscarMensajes(VistaChat vista){
-        vistaDelChat=vista;
+    public BuscarMensajes(VistaChat vista) {
+        vistaDelChat = vista;
+        try {
+            serverSocket = new ServerSocket(1234);
+        } catch (Exception ex) {
+
+        }
+
     }
 
     @Override
-    public void run(){
+    public void run() {
         Socket socket;
         String answer;
         Comunicacion datosRecibidos;
 
-        while (true){
+        while (true) {
             try {
                 socket = serverSocket.accept();
 
@@ -34,14 +40,14 @@ public class BuscarMensajes extends Thread{
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 answer = bufferedReader.readLine();
                 Gson gsonMsg = new Gson();
-                datosRecibidos = gsonMsg.fromJson(answer,Comunicacion.class);
+                datosRecibidos = gsonMsg.fromJson(answer, Comunicacion.class);
                 answerObject.setSuccess(vistaDelChat.enEsperaDeMsgs(datosRecibidos));
                 bufferedWriter.write(gsonMsg.toJson(answerObject));
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
                 bufferedWriter.close();
                 bufferedReader.close();
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 System.out.println("Fallo el socket de respuesta Incompetente ! >:v");
             }
         }
