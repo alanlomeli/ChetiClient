@@ -282,19 +282,22 @@ public class VistaChat extends JFrame {
     private void enviarMensaje() {
 
         Vector<String> vectorSendMsg = new Vector<>(3, 3);
+        EnviarSocket enviarMsg;
 
-        vectorSendMsg.addElement(new Usuario().getCelular() + "");//quien envia el msj
-        vectorSendMsg.addElement(numeroChatActivo + "");//a quien se le envia el msj
-        vectorSendMsg.addElement("" + numeroChatActivo);//a quien envia el msj
-        // AQUI VA A QUIEN LO ENVÍA YA SEA GRUPO O USUARIO
+        //Falta saber si el usuario está conectado**************
+        if (numeroChatActivo != 0 && pkGrupoActivo == 0) {//si lo envía a un usuario
+
+            vectorSendMsg.addElement(new Usuario().getCelular() + "");//quien envia el msj
+            vectorSendMsg.addElement(numeroChatActivo + "");//a quien se le envia el msj
+            enviarMsg = new EnviarSocket("MsgUsuario", vectorSendMsg);
+
+        } else {//si lo envía a un grupo
+            vectorSendMsg.addElement(new Usuario().getCelular() + "");//quien envia el msj
+            vectorSendMsg.addElement(pkGrupoActivo + "");//a quien se le envia el msj
+            enviarMsg = new EnviarSocket("MsgGrupo", vectorSendMsg);
+        }
+
         vectorSendMsg.addElement(etxtMsg.getText());//el mensaje a enviar
-
-        //AQUI IRÍAN UNA CONDICIÓN PARA SABER SI LO ENVÍA A UN GRUPO O UN USUARIO*****************************************
-
-
-        //SI ES MENSAJE LO ENVIA A UN USUARIO:
-
-        EnviarSocket enviarMsg = new EnviarSocket("MsgUsuario", vectorSendMsg);
         Respuesta respuesta = enviarMsg.enviar();
 
         if (respuesta.success() == true) {
@@ -428,7 +431,7 @@ public class VistaChat extends JFrame {
         labelNombreChat.setText("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
         labelNombreChat.setAlignmentX(CENTER_ALIGNMENT);
         System.out.println("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
-
+        pkGrupoActivo = 0;
         panelChat.validate();
 
     }
@@ -438,7 +441,7 @@ public class VistaChat extends JFrame {
 
         this.pkGrupoActivo = Integer.parseInt(parts[0]);
         salirGrupo.setVisible(true);
-
+        numeroChatActivo = 0;
         labelNombreChat.setText("Chateando en: " + (parts[1]));
         labelNombreChat.setAlignmentX(CENTER_ALIGNMENT);
         panelChat.validate();

@@ -7,8 +7,7 @@ public class Main {
         VistaChat vc = new VistaChat();
         vc.empezarAPP();
 
-
-        Thread hilo = new Thread();
+        Thread hilo;
         hilo = new BuscarMensajes(vc);
     }
 }

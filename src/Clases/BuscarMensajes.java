@@ -42,7 +42,7 @@ public class BuscarMensajes extends Thread{
                 bufferedWriter.close();
                 bufferedReader.close();
             }catch (Exception ex){
-                System.out.println("Fallo el socket Incompetente de respuesta! >:v");
+                System.out.println("Fallo el socket de respuesta Incompetente ! >:v");
             }
         }
     }
