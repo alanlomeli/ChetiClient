@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package Clases;
 
 import java.util.Vector;
@@ -18,7 +19,6 @@ public class Respuesta {
 
     public Respuesta() {
         this.success = false;
-
     }
 
     public Vector<String> getDatos() {

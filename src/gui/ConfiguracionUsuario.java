@@ -102,9 +102,9 @@ public class ConfiguracionUsuario extends JDialog {
             }
 
         });
+
         btnVolver.addActionListener((ActionEvent e) -> {
             dispose();
-
         });
 
         btnCerrar.addActionListener((ActionEvent o) -> {
@@ -131,6 +131,7 @@ public class ConfiguracionUsuario extends JDialog {
             cambiarIP.setVisible(true);
 
         });
+
         GroupLayout orden = new GroupLayout(this.getContentPane());
         orden.setHorizontalGroup(
                 orden.createParallelGroup()

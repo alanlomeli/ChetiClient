@@ -1,3 +1,4 @@
+import Clases.BuscarMensajes;
 import gui.VistaChat;
 
 public class Main {
@@ -6,5 +7,8 @@ public class Main {
         VistaChat vc = new VistaChat();
         vc.empezarAPP();
 
+        Thread hilo;
+        hilo = new BuscarMensajes(vc);
+        hilo.start();
     }
 }
