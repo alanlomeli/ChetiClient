@@ -50,6 +50,8 @@ public class VistaChat extends JFrame {
         loginVista = new Login(this);
         panelChat = new JPanel();
         panelChat.setBackground(Color.cyan);
+        panelChat.setLayout(new BoxLayout(panelChat, BoxLayout.Y_AXIS));
+
         panelMensajes = new JPanel();
         labelNombreChat = new JLabel();
         panelChat.add(labelNombreChat);
@@ -253,23 +255,32 @@ public class VistaChat extends JFrame {
 
     private void enviarMensaje() {
 
-        Gson gson = new Gson();
         Vector<String> vectorSendMsg = new Vector<>(3, 3);
 
         vectorSendMsg.addElement(new Usuario().getCelular() + "");//quien envia el msj
+        vectorSendMsg.addElement( numeroChatActivo+"");//a quien se le envia el msj
+        vectorSendMsg.addElement(""+numeroChatActivo);//a quien envia el msj
+        // AQUI VA A QUIEN LO ENVÍA YA SEA GRUPO O USUARIO
+        vectorSendMsg.addElement(etxtMsg.getText());//el mensaje a enviar
 
-        //vecotrSendMsg.addElement();//AQUI VA A QUIEN LO ENVÍA YA SEA GRUPO O USUARIO
-        vectorSendMsg.addElement(etxtMsg.getText());//el mensaje
-
-        //AQUI IRÍAN UNA CONDICIÓN PARA SABER SI LO ENVÍA A UN GRUPO O UN USUARIO
+        //AQUI IRÍAN UNA CONDICIÓN PARA SABER SI LO ENVÍA A UN GRUPO O UN USUARIO*****************************************
 
 
         //SI ES MENSAJE LO ENVIA A UN USUARIO:
-        Comunicacion enviarMsg = new Comunicacion("MsgUsu", vectorSendMsg);
+        //listaUsuarios.getCompitas().get(numeroChatActivo).getIp()***********OBTENER IP **************************
+        EnviarSocket enviarMsg = new EnviarSocket("MsgUsuario", vectorSendMsg);
+         Respuesta respuesta =  enviarMsg.enviar();
 
+         if (respuesta.success()==true){
+             panelChat.add(new JLabel("Tú:  "+vectorSendMsg.get(2)));///
+         }else{
+             panelChat.add(new JLabel("No se pudó mandar el mensaje, maldito Bastardo!!! >:v"));
+         }
+         panelChat.repaint();
+         panelChat.revalidate();
         //SI EL MENSAJE LO ENVIA A UN GRUPO
 
-        Comunicacion enviarMsgGrpo = new Comunicacion("MsgGrupo", vectorSendMsg);
+        //Comunicacion enviarMsgGrpo = new Comunicacion("MsgGrupo", vectorSendMsg);
 
         try {
             System.out.println();
@@ -392,7 +403,9 @@ public class VistaChat extends JFrame {
         labelNombreChat.setText("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
         labelNombreChat.setAlignmentX(CENTER_ALIGNMENT);
         System.out.println("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
+
         panelChat.validate();
+
     }
 
     /**

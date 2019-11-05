@@ -18,7 +18,6 @@ public class Respuesta {
 
     public Respuesta() {
         this.success = false;
-
     }
 
     public Vector<String> getDatos() {
