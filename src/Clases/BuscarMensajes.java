@@ -21,34 +21,39 @@ public class BuscarMensajes extends Thread {
         try {
             serverSocket = new ServerSocket(1234);
         } catch (Exception ex) {
-
         }
-
     }
 
     @Override
     public void run() {
-        Socket socket;
+        Socket c;
         String answer;
         Comunicacion datosRecibidos;
 
         while (true) {
             try {
-                socket = serverSocket.accept();
+                c = serverSocket.accept();
 
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(c.getInputStream()));
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(c.getOutputStream()));
                 answer = bufferedReader.readLine();
                 Gson gsonMsg = new Gson();
                 datosRecibidos = gsonMsg.fromJson(answer, Comunicacion.class);
-                answerObject.setSuccess(vistaDelChat.enEsperaDeMsgs(datosRecibidos));
-                bufferedWriter.write(gsonMsg.toJson(answerObject));
+                try {
+                    System.out.println("Se envio un success");
+                    answerObject.setSuccess(vistaDelChat.enEsperaDeMsgs(datosRecibidos));
+                    bufferedWriter.write(gsonMsg.toJson(answerObject));
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+
+
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
                 bufferedWriter.close();
                 bufferedReader.close();
             } catch (Exception ex) {
-                System.out.println("Fallo el socket de respuesta Incompetente ! >:v");
+                //System.out.println("Fallo el socket de respuesta Incompetente ! >:v");
             }
         }
     }

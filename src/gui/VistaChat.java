@@ -688,6 +688,8 @@ public class VistaChat extends JFrame {
 
         try{
             panelChat.add(new JLabel(datosRecibidos.getVector().get(0)+": "+datosRecibidos.getVector().get(1)));
+            panelChat.validate();
+            panelChat.repaint();
             return true;
         }catch (Exception e){
             System.out.println("No se envío el msg Maldito Insecto!! >:v");
