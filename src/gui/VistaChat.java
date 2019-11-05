@@ -449,6 +449,43 @@ public class VistaChat extends JFrame {
     }
 
     /**
+     * @param datos Los datos de la persona seleccionada para agregar a compitas.
+     */
+    private void agregarCompita(String datos) {
+
+        String[] parts = datos.split(",");
+
+        System.out.println("Nuevo compita : " + (!parts[1].equals("") ? parts[1] : parts[2]));
+
+        int resp = JOptionPane.showConfirmDialog(null, "¿Añadir usuario " + parts[0] + " a compitas?",
+                "Nuevo compita", JOptionPane.YES_NO_OPTION);
+        System.out.println(resp);
+
+        if (resp == 0) {
+            String apodo = JOptionPane.showInputDialog("Dale un apodo: ");
+
+            Vector<String> vector = new Vector<>(2, 2);
+            Usuario usr = new Usuario().obtenerObjeto();
+
+            vector.addElement(String.valueOf(usr.getCelular()));
+            vector.addElement(parts[2]);
+            if (apodo.equals("")) {
+                vector.addElement(parts[0]);
+            } else {
+                vector.addElement(apodo);
+            }
+
+            EnviarSocket enviarSolicitud = new EnviarSocket("solicitudCompita", vector);
+            Respuesta respuestaSolicitud = enviarSolicitud.enviar();
+
+            if (respuestaSolicitud.success()) {
+                JOptionPane.showMessageDialog(null, "Nuevo compita agregado!");
+                System.out.println("Añadiendo compita " + parts[0]);
+            }
+        }
+    }
+
+    /**
      * En esta funcion, todos los paneles obtendran los respectivos usuarios correspondientes, ya sea compita, usuario
      * conectado y no conectado.
      */
@@ -459,7 +496,7 @@ public class VistaChat extends JFrame {
         panelConectados.setLayout(new FlowLayout());
         panelDesconectados.setLayout(new FlowLayout());
         JToggleButton[] botonCompitas = new JToggleButton[listaUsuarios.getCompitas().size()];
-        JToggleButton[] botonOnline = new JToggleButton[listaUsuarios.obtenerListaCompleta().size()];
+        JButton[] botonOnline = new JButton[listaUsuarios.obtenerListaCompleta().size()];
         ButtonGroup gruposChat = new ButtonGroup();
 
         if (compitas.isSelected()) {         //Aqui se acomodan los compitas
@@ -496,9 +533,9 @@ public class VistaChat extends JFrame {
             for (long key : listaUsuarios.obtenerListaCompleta().keySet()) {
                 if (!listaUsuarios.obtenerListaCompleta().get(key).getApodo().equals("")) {
 
-                    botonOnline[i] = new JToggleButton(listaUsuarios.obtenerListaCompleta().get(key).getApodo());
+                    botonOnline[i] = new JButton(listaUsuarios.obtenerListaCompleta().get(key).getApodo());
                 } else {
-                    botonOnline[i] = new JToggleButton(listaUsuarios.obtenerListaCompleta().get(key).getNombre());
+                    botonOnline[i] = new JButton(listaUsuarios.obtenerListaCompleta().get(key).getNombre());
                 }
                 botonOnline[i].setPreferredSize(new Dimension(80, 25));
 
@@ -508,8 +545,7 @@ public class VistaChat extends JFrame {
                 );
 
                 botonOnline[i].addActionListener((ActionEvent eventoBoton) -> {
-                    personaSeleccionada(eventoBoton.getActionCommand());
-
+                    agregarCompita(eventoBoton.getActionCommand());
                 });
                 gruposChat.add(botonOnline[i]);
                 if (listaUsuarios.obtenerListaCompleta().get(key).isOnline()) {  //Conectados al panel online
