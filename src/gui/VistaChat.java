@@ -267,7 +267,7 @@ public class VistaChat extends JFrame {
 
 
         //SI ES MENSAJE LO ENVIA A UN USUARIO:
-        //listaUsuarios.getCompitas().get(numeroChatActivo).getIp()***********OBTENER IP **************************
+
         EnviarSocket enviarMsg = new EnviarSocket("MsgUsuario", vectorSendMsg);
          Respuesta respuesta =  enviarMsg.enviar();
 
@@ -582,6 +582,18 @@ public class VistaChat extends JFrame {
         panelDesconectados.repaint();
 
 
+    }
+
+    public boolean enEsperaDeMsgs(Comunicacion datosRecibidos){
+
+        try{
+            panelChat.add(new JLabel(datosRecibidos.getVector().get(0)+": "+datosRecibidos.getVector().get(1)));
+            return true;
+        }catch (Exception e){
+            System.out.println("No se envío el msg Maldito Insecto!! >:v");
+            System.out.println(e);
+            return false;
+        }
     }
 
 }
