@@ -57,7 +57,7 @@ public class VistaChat extends JFrame {
         headerChat.setLayout(new BoxLayout(headerChat, BoxLayout.X_AXIS));
         panelMensajes = new JPanel();
         labelNombreChat = new JLabel();
-        salirGrupo= new JButton("Salir");
+        salirGrupo = new JButton("Salir");
         salirGrupo.setVisible(false);
         headerChat.add(labelNombreChat);
         headerChat.add(salirGrupo);
@@ -138,19 +138,19 @@ public class VistaChat extends JFrame {
 
         salirGrupo.addActionListener((ActionEvent eventoBoton) -> {
             Usuario usuario = new Usuario();
-            usuario=usuario.obtenerObjeto();
+            usuario = usuario.obtenerObjeto();
 
-            Vector <String> datosEnviar = new Vector<>();
-            datosEnviar.add(pkGrupoActivo+"");
-            datosEnviar.add(usuario.getCelular()+"");
-            EnviarSocket salirGrupo= new EnviarSocket("salirGrupo",datosEnviar);
-            Respuesta res= salirGrupo.enviar();
-            if(res.success()){
-                JOptionPane.showMessageDialog(null, "Has salido del grupo" );
+            Vector<String> datosEnviar = new Vector<>();
+            datosEnviar.add(pkGrupoActivo + "");
+            datosEnviar.add(usuario.getCelular() + "");
+            EnviarSocket salirGrupo = new EnviarSocket("salirGrupo", datosEnviar);
+            Respuesta res = salirGrupo.enviar();
+            if (res.success()) {
+                JOptionPane.showMessageDialog(null, "Has salido del grupo");
                 panelChat.validate();
                 panelChat.repaint();
                 this.obtenerListaUsuarios();
-                pkGrupoActivo=0;
+                pkGrupoActivo = 0;
                 labelNombreChat.setText("");
                 this.salirGrupo.setVisible(false);
             }
@@ -284,8 +284,8 @@ public class VistaChat extends JFrame {
         Vector<String> vectorSendMsg = new Vector<>(3, 3);
 
         vectorSendMsg.addElement(new Usuario().getCelular() + "");//quien envia el msj
-        vectorSendMsg.addElement( numeroChatActivo+"");//a quien se le envia el msj
-        vectorSendMsg.addElement(""+numeroChatActivo);//a quien envia el msj
+        vectorSendMsg.addElement(numeroChatActivo + "");//a quien se le envia el msj
+        vectorSendMsg.addElement("" + numeroChatActivo);//a quien envia el msj
         // AQUI VA A QUIEN LO ENVÍA YA SEA GRUPO O USUARIO
         vectorSendMsg.addElement(etxtMsg.getText());//el mensaje a enviar
 
@@ -295,15 +295,15 @@ public class VistaChat extends JFrame {
         //SI ES MENSAJE LO ENVIA A UN USUARIO:
 
         EnviarSocket enviarMsg = new EnviarSocket("MsgUsuario", vectorSendMsg);
-         Respuesta respuesta =  enviarMsg.enviar();
+        Respuesta respuesta = enviarMsg.enviar();
 
-         if (respuesta.success()==true){
-             panelChat.add(new JLabel("Tú:  "+vectorSendMsg.get(2)));///
-         }else{
-             panelChat.add(new JLabel("No se pudó mandar el mensaje, maldito Bastardo!!! >:v"));
-         }
-         panelChat.repaint();
-         panelChat.revalidate();
+        if (respuesta.success() == true) {
+            panelChat.add(new JLabel("Tú:  " + vectorSendMsg.get(2)));///
+        } else {
+            panelChat.add(new JLabel("No se pudó mandar el mensaje, maldito Bastardo!!! >:v"));
+        }
+        panelChat.repaint();
+        panelChat.revalidate();
         //SI EL MENSAJE LO ENVIA A UN GRUPO
 
         //Comunicacion enviarMsgGrpo = new Comunicacion("MsgGrupo", vectorSendMsg);
@@ -433,7 +433,7 @@ public class VistaChat extends JFrame {
 
     }
 
-    private void grupoSeleccionado(String datos){
+    private void grupoSeleccionado(String datos) {
         String[] parts = datos.split(",");
 
         this.pkGrupoActivo = Integer.parseInt(parts[0]);
@@ -444,6 +444,7 @@ public class VistaChat extends JFrame {
         panelChat.validate();
 
     }
+
     /**
      * En esta funcion, todos los paneles obtendran los respectivos usuarios correspondientes, ya sea compita, usuario
      * conectado y no conectado.
@@ -587,26 +588,26 @@ public class VistaChat extends JFrame {
         btnCrearGrupo.addActionListener((ActionEvent e) -> {
             Usuario personaActual = new Usuario();
             personaActual = personaActual.obtenerObjeto();
-            if ((grupoBotones.getSelection()==null&&datos.size() == 0) || agregarNombre.getText().equals("")) {
+            if ((grupoBotones.getSelection() == null && datos.size() == 0) || agregarNombre.getText().equals("")) {
                 JOptionPane.showMessageDialog(null, "Asegurese de agregar miembros y " +
                         "nombre del grupo");
             } else {
                 Usuario usuario = new Usuario();
-                usuario= usuario.obtenerObjeto();
-                if(grupoBotones.getSelection()!=null&&listaUsuarios.getGrupos().get(pkGrupoActivo).getCreador()!=usuario.getCelular()) {
+                usuario = usuario.obtenerObjeto();
+                if (grupoBotones.getSelection() != null && listaUsuarios.getGrupos().get(pkGrupoActivo).getCreador() != usuario.getCelular()) {
                     JOptionPane.showMessageDialog(null, "Solo el creador del grupo puede cambiar estos ajustes");
                     return;
                 }
-                    datos.insertElementAt((grupoBotones.getSelection() == null ? personaActual.getCelular() : pkGrupoActivo) + "," + agregarNombre.getText(), 0);
-                    EnviarSocket crearGrupo = new EnviarSocket(grupoBotones.getSelection() == null ? "crearGrupo" : "actualizarGrupo", datos);
+                datos.insertElementAt((grupoBotones.getSelection() == null ? personaActual.getCelular() : pkGrupoActivo) + "," + agregarNombre.getText(), 0);
+                EnviarSocket crearGrupo = new EnviarSocket(grupoBotones.getSelection() == null ? "crearGrupo" : "actualizarGrupo", datos);
 
-                    Respuesta respuesta = crearGrupo.enviar();
+                Respuesta respuesta = crearGrupo.enviar();
 
                 datos.removeAllElements();
                 agregarNombre.setText("");
                 if (respuesta.success()) {
-                    JOptionPane.showMessageDialog(null, (grupoBotones.getSelection()==null?"Grupo creado correctamente":"Grupo actualizado correctamente"));
-                obtenerListaUsuarios();
+                    JOptionPane.showMessageDialog(null, (grupoBotones.getSelection() == null ? "Grupo creado correctamente" : "Grupo actualizado correctamente"));
+                    obtenerListaUsuarios();
                 }
 
             }
@@ -633,17 +634,16 @@ public class VistaChat extends JFrame {
                         ).addComponent(btnCrearGrupo)
         );
 
-                panelDesconectados.setLayout(crearGrupo);
-
-
-        }
+        panelDesconectados.setLayout(crearGrupo);
         panelConectados.validate();
         panelDesconectados.validate();
         panelConectados.repaint();
         panelDesconectados.repaint();
 
-
     }
+
+
+
 
     public boolean enEsperaDeMsgs(Comunicacion datosRecibidos){
 

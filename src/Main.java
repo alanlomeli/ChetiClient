@@ -1,3 +1,4 @@
+import Clases.BuscarMensajes;
 import gui.VistaChat;
 
 public class Main {
