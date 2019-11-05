@@ -5,6 +5,5 @@ public class Main {
 
         VistaChat vc = new VistaChat();
         vc.empezarAPP();
-
     }
 }
