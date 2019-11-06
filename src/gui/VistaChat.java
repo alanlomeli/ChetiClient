@@ -284,17 +284,21 @@ public class VistaChat extends JFrame {
         Vector<String> vectorSendMsg = new Vector<>(3, 3);
         EnviarSocket enviarMsg;
 
-        //Falta saber si el usuario está conectado**************
+        //Falta saber si el usuario está conectado**************w
         if (numeroChatActivo != 0 && pkGrupoActivo == 0) {//si lo envía a un usuario
-
-            vectorSendMsg.addElement(new Usuario().getCelular() + "");//quien envia el msj
+            Usuario usuario= new Usuario();
+            usuario=usuario.obtenerObjeto();
+            vectorSendMsg.addElement(usuario.getCelular() + "");//quien envia el msj
+            System.out.println("el que envia:"+usuario.getCelular() );
             vectorSendMsg.addElement(numeroChatActivo + "");//a quien se le envia el msj
+            System.out.println("vas a mandar a:"+numeroChatActivo);
             enviarMsg = new EnviarSocket("MsgUsuario", vectorSendMsg);
-
+            System.out.println("a un usuario");
         } else {//si lo envía a un grupo
             vectorSendMsg.addElement(new Usuario().getCelular() + "");//quien envia el msj
             vectorSendMsg.addElement(pkGrupoActivo + "");//a quien se le envia el msj
             enviarMsg = new EnviarSocket("MsgGrupo", vectorSendMsg);
+            System.out.println("a un grupo");
         }
 
         vectorSendMsg.addElement(etxtMsg.getText());//el mensaje a enviar
@@ -302,8 +306,10 @@ public class VistaChat extends JFrame {
 
         if (respuesta.success() == true) {
             panelChat.add(new JLabel("Tú:  " + vectorSendMsg.get(2)));///
+            etxtMsg.setText("");
         } else {
-            panelChat.add(new JLabel("No se pudó mandar el mensaje, maldito Bastardo!!! >:v"));
+
+            panelChat.add(new JLabel("No se pudó mandar el mensaje"));
         }
         panelChat.repaint();
         panelChat.revalidate();
