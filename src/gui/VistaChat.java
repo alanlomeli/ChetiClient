@@ -636,9 +636,25 @@ public class VistaChat extends JFrame {
                 grupoBotones.add(botonGrupo[i]);
                 i++;
             }
+            panelConectados.setLayout(new GridLayout(0, 1));
+            panelConectados.add(new JSeparator());
+            panelConectados.add(new JLabel("Solicitudes:"));
+
+            /*
+            Vector<String> vector = new Vector<>(2, 2);
+            Usuario usr = new Usuario().obtenerObjeto();
+
+            vector.addElement(String.valueOf(usr.getCelular()));
+
+            EnviarSocket enviarSolicitud = new EnviarSocket("solicitudesGrupos", vector);
+            Respuesta respuestaSolicitud = enviarSolicitud.enviar();
+
+            if (respuestaSolicitud.success()) {
+                JOptionPane.showMessageDialog(null, "Solicitudes nuevas!");
+            }
+             */
+
             cargarInterfazManipulacionGrupos(grupoBotones, "");
-
-
         }
         panelConectados.validate();
         panelDesconectados.validate();
