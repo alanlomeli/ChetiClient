@@ -199,7 +199,6 @@ public class VistaChat extends JFrame {
                 }
             }
         });
-        configuracionUsuario = new ConfiguracionUsuario();
     }
 
     /**
@@ -332,6 +331,7 @@ public class VistaChat extends JFrame {
     }
 
     private void iniciarPanelMensajes() {
+        configuracionUsuario = new ConfiguracionUsuario();
 
         etxtMsg = new JTextField("Escriba el mensaje:");
         btnSendMsg = new JButton("Enviar");
@@ -367,6 +367,7 @@ public class VistaChat extends JFrame {
 
         //Listener panel mensajes
         btnConfiguracion.addActionListener((ActionEvent e) -> {
+
             //Aqui se cierra la ventana de Chat al cerrar sesion
             configuracionUsuario.setModal(true);
             configuracionUsuario.setVisible(true);
