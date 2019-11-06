@@ -62,7 +62,7 @@ public class Login extends JDialog {
         });
 
         txtForgot.addActionListener((ActionEvent e) ->{
-            OlvidoContra olvido=new OlvidoContra();
+            OlvidoContra olvido=new OlvidoContra(this);
             olvido.setVisible(true);
             this.setVisible(false);
         });

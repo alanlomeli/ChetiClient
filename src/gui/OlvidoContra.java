@@ -24,9 +24,11 @@ public class OlvidoContra extends JDialog {
     private JButton botonVerificar, botonRegresar;
     private JLabel titulo, numeroTitulo, preguntaTitulo;
     private JTextField numeroTexto, preguntaTexto;
-
-    public OlvidoContra() {
+    private Login login;
+    public OlvidoContra(Login login) {
+        this.login=login;
         Inicio();
+
     }
 
     private void Inicio() {
@@ -48,7 +50,8 @@ public class OlvidoContra extends JDialog {
         });
 
         botonRegresar.addActionListener((ActionEvent e) -> {
-
+            this.setVisible(false);
+            login.setVisible(true);
         });
 
         GroupLayout orden = new GroupLayout(this.getContentPane());
@@ -92,6 +95,8 @@ public class OlvidoContra extends JDialog {
 
         if (respuestaDatos.success()) {
             JOptionPane.showMessageDialog(null, "Tu contraseña es: " + respuestaDatos.getDatos());
+            this.setVisible(false);
+            login.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null, "Ni Dios sabe tu contraseña");
         }

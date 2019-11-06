@@ -16,6 +16,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.util.Vector;
 import javax.swing.*;
 
@@ -288,11 +290,11 @@ public class VistaChat extends JFrame {
 
         Vector<String> vectorSendMsg = new Vector<>(3, 3);
         EnviarSocket enviarMsg;
-
+        Usuario usuario= new Usuario();
+        usuario=usuario.obtenerObjeto();
         //Falta saber si el usuario está conectado**************w
         if (numeroChatActivo != 0 && pkGrupoActivo == 0) {//si lo envía a un usuario
-            Usuario usuario= new Usuario();
-            usuario=usuario.obtenerObjeto();
+
             vectorSendMsg.addElement(usuario.getCelular() + "");//quien envia el msj
             System.out.println("el que envia:"+usuario.getCelular() );
             vectorSendMsg.addElement(numeroChatActivo + "");//a quien se le envia el msj
@@ -300,7 +302,7 @@ public class VistaChat extends JFrame {
             enviarMsg = new EnviarSocket("MsgUsuario", vectorSendMsg);
             System.out.println("a un usuario");
         } else {//si lo envía a un grupo
-            vectorSendMsg.addElement(new Usuario().getCelular() + "");//quien envia el msj
+            vectorSendMsg.addElement( usuario.getCelular() + "");//quien envia el msj
             vectorSendMsg.addElement(pkGrupoActivo + "");//a quien se le envia el msj
             enviarMsg = new EnviarSocket("MsgGrupo", vectorSendMsg);
             System.out.println("a un grupo");
@@ -763,6 +765,7 @@ public class VistaChat extends JFrame {
             panelChat.add(new JLabel(datosRecibidos.getVector().get(0)+": "+datosRecibidos.getVector().get(1)));
             panelChat.validate();
             panelChat.repaint();
+
             return true;
         }catch (Exception e){
             System.out.println("No se envío el msg Maldito Insecto!! >:v");
@@ -770,5 +773,16 @@ public class VistaChat extends JFrame {
             return false;
         }
     }
+    public boolean verSiExiste(long dueno,long  compita){
+        try {
+            FileInputStream archivoConfig = new FileInputStream(dueno+"."+compita);
+            DataInputStream reader = new DataInputStream(archivoConfig);
+            reader.close();
 
+        } catch (Exception ex) {
+            return false;
+        }
+
+        return true;
+    }
 }
