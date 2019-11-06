@@ -104,12 +104,11 @@ public class ConfiguracionUsuario extends JDialog {
         });
 
         btnVolver.addActionListener((ActionEvent e) -> {
-            dispose();
+            setVisible(false);
         });
 
         btnCerrar.addActionListener((ActionEvent o) -> {
 //                Borramos el archivo de datos del usuario.
-
 
             cerrarSesion = true;
             this.setVisible(false);
@@ -117,11 +116,8 @@ public class ConfiguracionUsuario extends JDialog {
 
         btnDarkMode.addActionListener((ActionEvent e) -> {
 
-            if (darkMode) {
-                darkMode = false;
-            } else {
-                darkMode = true;
-            }
+            darkMode = !darkMode;
+            System.out.println(darkMode);
 
         });
 

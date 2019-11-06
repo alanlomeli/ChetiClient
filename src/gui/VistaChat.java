@@ -22,7 +22,6 @@ import javax.swing.*;
 public class VistaChat extends JFrame {
 
     private Login loginVista;
-    private ConfiguracionUsuario configUsr;
     private JPanel panelChat, panelMessage, panelConectados, panelDesconectados; //División de paneles principales
     private JToggleButton compitas, usuarios, grupos;
     private JButton btnConfiguracion;
@@ -38,6 +37,9 @@ public class VistaChat extends JFrame {
     private JPanel headerChat;
     private JButton salirGrupo;
     private ListaUsuarios listaUsuarios;  //Esta lista tiene todos los usuarios, amigos y no amigos, tambien tiene si estan online
+    private ConfiguracionUsuario configuracionUsuario;
+    private Font fuente;
+    private Font fuenteDef;
 
     public VistaChat() {
         iniciarComponentes(); //En este void inicia la magia o.0
@@ -78,6 +80,9 @@ public class VistaChat extends JFrame {
         usuarios = new JToggleButton();
         grupos = new JToggleButton();
         buttonGroup = new ButtonGroup();
+
+        fuente = new Font("Agency FB", Font.BOLD, 14);
+        fuenteDef = new Font("Dialog", Font.BOLD, 12);
 
         compitas.setText("Compitas");
         usuarios.setText("Usuarios");
@@ -192,7 +197,7 @@ public class VistaChat extends JFrame {
                 }
             }
         });
-
+        configuracionUsuario = new ConfiguracionUsuario();
     }
 
     /**
@@ -361,12 +366,11 @@ public class VistaChat extends JFrame {
         //Listener panel mensajes
         btnConfiguracion.addActionListener((ActionEvent e) -> {
             //Aqui se cierra la ventana de Chat al cerrar sesion
-            configUsr = new ConfiguracionUsuario();
-            configUsr.setModal(true);
-            configUsr.setVisible(true);
+            configuracionUsuario.setModal(true);
+            configuracionUsuario.setVisible(true);
 
             //Boton de cerrar sesion fue presionado.
-            if (configUsr.cerrarSesion) {
+            if (configuracionUsuario.cerrarSesion) {
                 decirOffline();
                 Usuario usr = new Usuario();
                 usr.borrarArchivo();
@@ -379,17 +383,38 @@ public class VistaChat extends JFrame {
             }
 
             //Boton de darkMode fue presionado
-            if (configUsr.darkMode) {
+            if (configuracionUsuario.darkMode) {
                 panelChat.setBackground(Color.GRAY);
                 panelMessage.setBackground(Color.GRAY);
                 panelConectados.setBackground(Color.GRAY);
                 panelDesconectados.setBackground(Color.GRAY);
+
+                compitas.setFont(fuente);
+                usuarios.setFont(fuente);
+                grupos.setFont(fuente);
+                btnConfiguracion.setFont(fuente);
+                indicadorPanelConectados.setFont(fuente);
+                indicadorPanelDesconectados.setFont(fuente);
+                labelNombreChat.setFont(fuente);
+                btnSendMsg.setFont(fuente);
+                salirGrupo.setFont(fuente);
 
             } else {
                 panelChat.setBackground(Color.cyan);
                 panelMessage.setBackground(Color.green);
                 panelConectados.setBackground(Color.yellow);
                 panelDesconectados.setBackground(Color.pink);
+
+                compitas.setFont(fuenteDef);
+                usuarios.setFont(fuenteDef);
+                grupos.setFont(fuenteDef);
+                btnConfiguracion.setFont(fuenteDef);
+                indicadorPanelConectados.setFont(fuenteDef);
+                indicadorPanelDesconectados.setFont(fuenteDef);
+                labelNombreChat.setFont(fuenteDef);
+                btnSendMsg.setFont(fuenteDef);
+                salirGrupo.setFont(fuenteDef);
+
             }
 
 
@@ -430,15 +455,41 @@ public class VistaChat extends JFrame {
     private void personaSeleccionada(String datos) {
 
         String[] parts = datos.split(",");
+        String[] buttons = {"Iniciar chat", "Borrar compita"};
 
-        this.numeroChatActivo = Long.parseLong(parts[2]);
-        salirGrupo.setVisible(false);
+        int rc = JOptionPane.showOptionDialog(null, "¿Que hacemos. . . ?", "Confirmacion",
+                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[1]);
 
-        labelNombreChat.setText("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
-        labelNombreChat.setAlignmentX(CENTER_ALIGNMENT);
-        System.out.println("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
-        pkGrupoActivo = 0;
-        panelChat.validate();
+        switch (rc) {
+            case 0:
+                this.numeroChatActivo = Long.parseLong(parts[2]);
+                salirGrupo.setVisible(false);
+
+                labelNombreChat.setText("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
+                labelNombreChat.setAlignmentX(CENTER_ALIGNMENT);
+                System.out.println("Chateando con: " + (!parts[1].equals("") ? parts[1] : parts[2]));
+                pkGrupoActivo = 0;
+                panelChat.validate();
+                break;
+            case 1:
+                Vector<String> vector = new Vector<>(2, 2);
+                Usuario usr = new Usuario().obtenerObjeto();
+
+                vector.addElement(String.valueOf(usr.getCelular()));
+                vector.addElement(parts[2]);
+
+                EnviarSocket enviarSolicitud = new EnviarSocket("borrarCompita", vector);
+                Respuesta respuestaSolicitud = enviarSolicitud.enviar();
+
+                if (respuestaSolicitud.success()) {
+                    JOptionPane.showMessageDialog(null, "Compita eliminado!");
+                    System.out.println("Borrando compita " + parts[0]);
+                }
+
+                break;
+        }
+
+
 
     }
 
