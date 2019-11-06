@@ -5,9 +5,13 @@
  */
 package gui;
 
+import Clases.EnviarSocket;
+import Clases.Respuesta;
+
 import javax.swing.*;
 
 import java.awt.event.ActionEvent;
+import java.util.Vector;
 
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
@@ -26,7 +30,7 @@ public class OlvidoContra extends JDialog {
     }
 
     private void Inicio() {
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        //this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("Chetis");
 
         botonVerificar = new JButton("Verificar");
@@ -34,10 +38,16 @@ public class OlvidoContra extends JDialog {
         titulo = new JLabel("¿Olvidaste tu contraseña?");
         numeroTitulo = new JLabel("Número telefonico:");
         preguntaTitulo = new JLabel("¿Cuál es el nombre del lugar donde naciste?");
-        numeroTexto = new JTextField("Número de teléfono");
-        preguntaTexto = new JTextField("Escribe el lugar");
+        numeroTexto = new JTextField();
+        preguntaTexto = new JTextField();
+
+
 
         botonVerificar.addActionListener((ActionEvent e) -> {
+            olvido();
+        });
+
+        botonRegresar.addActionListener((ActionEvent e) -> {
 
         });
 
@@ -70,5 +80,20 @@ public class OlvidoContra extends JDialog {
 
         setLayout(orden);
         this.pack();
+    }
+
+    private void olvido() {
+        Vector<String> vector = new Vector<>(2, 2);
+        vector.addElement(numeroTexto.getText());
+        vector.addElement(preguntaTexto.getText());
+
+        EnviarSocket olvideContra = new EnviarSocket("recuperarCuenta", vector);
+        Respuesta respuestaDatos = olvideContra.enviar();
+
+        if (respuestaDatos.success()) {
+            JOptionPane.showMessageDialog(null, "Tu contraseña es: " + respuestaDatos.getDatos());
+        } else {
+            JOptionPane.showMessageDialog(null, "Ni Dios sabe tu contraseña");
+        }
     }
 }

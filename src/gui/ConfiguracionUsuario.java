@@ -8,6 +8,7 @@ package gui;
 import Clases.Comunicacion;
 import Clases.EnviarSocket;
 import Clases.Respuesta;
+import Clases.Usuarios;
 import Pojos.Usuario;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
@@ -87,7 +88,11 @@ public class ConfiguracionUsuario extends JDialog {
 
         btnCambiarContra.addActionListener((ActionEvent e) -> {
             if (!String.valueOf(textCambiarContra.getPassword()).equals("estoespurallenadera")) {
-                Vector<String> contra = new Vector();
+                //Vector<String> contra = new Vector();
+                Vector<String> contra = new Vector<>(2, 2);
+                Usuario usuario = new Usuario();
+
+                contra.add(String.valueOf(usuario.obtenerObjeto().getCelular()));
                 contra.add(String.valueOf(textCambiarContra.getPassword()));
                 EnviarSocket cambiarNombre = new EnviarSocket("cambiarContra", contra);
                 Respuesta respuesta = cambiarNombre.enviar();

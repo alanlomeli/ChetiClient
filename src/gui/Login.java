@@ -29,8 +29,8 @@ import java.util.Vector;
 public class Login extends JDialog {
 
     private Socket socketCredenciales;
-    private JButton btnRegistrar, btnIngresar;
-    private JLabel txtInicia, txtNum, txtPass, txtForgot;
+    private JButton btnRegistrar, btnIngresar, txtForgot;
+    private JLabel txtInicia, txtNum, txtPass;
     private JTextField etxtNum;
     private JPasswordField etxtPass;
     private int contadorErrores;
@@ -50,6 +50,7 @@ public class Login extends JDialog {
 
         btnRegistrar = new JButton("Registrar");
         btnIngresar = new JButton("Ingresar");
+        txtForgot = new JButton("Olvidé mi contraseña");
         btnIngresar.addActionListener((ActionEvent e) -> {
             enviarCredenciales();
 
@@ -59,10 +60,16 @@ public class Login extends JDialog {
             vistaRegistro.setVisible(true);
             this.dispose();
         });
+
+        txtForgot.addActionListener((ActionEvent e) ->{
+            OlvidoContra olvido=new OlvidoContra();
+            olvido.setVisible(true);
+            this.setVisible(false);
+        });
         txtInicia = new JLabel("<html><h2>Inicia sesión</h2></html>");
         txtPass = new JLabel("Contraseña");
         txtNum = new JLabel("Número Telefónico");
-        txtForgot = new JLabel("<html><font color='blue'><u>Olvidé mi contraseña</u></font></html>");
+        //txtForgot = new JLabel("<html><font color='blue'><u>Olvidé mi contraseña</u></font></html>");
         etxtNum = new JTextField();
         etxtPass = new JPasswordField();
         /*
