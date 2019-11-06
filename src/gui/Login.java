@@ -40,7 +40,7 @@ public class Login extends JDialog {
 
     public Login(VistaChat vistaChat) {
         this.vistachat = vistaChat;
-        this.vistaRegistro = new Registro(vistaChat);
+        this.vistaRegistro = new Registro(vistaChat, this);
         start();
     }
 
@@ -56,11 +56,8 @@ public class Login extends JDialog {
         });
 
         btnRegistrar.addActionListener((ActionEvent e) -> {
-            Registro reg = new Registro(vistachat);
-
-            reg.setVisible(true);
-            this.setVisible(false);
-
+            vistaRegistro.setVisible(true);
+            this.dispose();
         });
         txtInicia = new JLabel("<html><h2>Inicia sesión</h2></html>");
         txtPass = new JLabel("Contraseña");

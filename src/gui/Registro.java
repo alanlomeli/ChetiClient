@@ -24,9 +24,11 @@ public class Registro extends JDialog {
     private JPanel Registro;
     JButton BRegistrar, BCancelar;
     private VistaChat vistaChat;
+    private Login login;
 
-    public Registro(VistaChat vistaChat) {
+    public Registro(VistaChat vistaChat, Login login) {
         this.vistaChat = vistaChat;
+        this.login = login;
         this.setResizable(false);
         iniciarComponentes();
     }
@@ -49,8 +51,13 @@ public class Registro extends JDialog {
         //Button
         BRegistrar = new JButton("Registrar");
         BCancelar = new JButton("Cancelar");
+
         BRegistrar.addActionListener((ActionEvent e) -> {
             btnRegistrar();
+        });
+
+        BCancelar.addActionListener((ActionEvent e) -> {
+            btnCancelar();
         });
 
         GroupLayout layout = new GroupLayout(getContentPane());
@@ -134,5 +141,10 @@ public class Registro extends JDialog {
             JOptionPane.showMessageDialog(null, "Se Registró Incorrectamente");
 
         }
+    }
+
+    private void btnCancelar() {
+        this.dispose();
+        login.setVisible(true);
     }
 }
